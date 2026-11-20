@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050811">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WiFiZone Pro Manager • Ultra Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #050811;
+            --bg-surface: rgba(15, 23, 42, 0.65);
+            --bg-surface-elevated: rgba(30, 41, 59, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(255, 203, 5, 0.35);
+            --accent-mtn: #FFCB05;
+            --accent-mtn-glow: rgba(255, 203, 5, 0.25);
+            --accent-cyan: #06B6D4;
+            --accent-emerald: #10B981;
+            --accent-rose: #F43F5E;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --spring: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 105px;
+            background-image: 
+                radial-gradient(circle at 15% 0%, rgba(255, 203, 5, 0.09) 0%, transparent 45%),
+                radial-gradient(circle at 85% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Tactile Hypersensitive Feedback */
+        .tactile {
+            transition: transform 0.25s var(--spring), background-color 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+            cursor: pointer;
+        }
+        .tactile:active {
+            transform: scale(0.95);
+        }
+
+        /* Header Glass */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(5, 8, 17, 0.78);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #FFCB05 0%, #F59E0B 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #050811;
+            box-shadow: 0 0 20px var(--accent-mtn-glow);
+            position: relative;
+        }
+
+        .brand-title h1 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-pro {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: rgba(255, 203, 5, 0.15);
+            color: var(--accent-mtn);
+            border: 1px solid rgba(255, 203, 5, 0.3);
+            padding: 2px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.25); }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--border-glow);
+        }
+
+        /* Container */
+        main {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* View Sections */
+        .view-section {
+            display: none;
+            animation: fadeSlideUp 0.35s var(--spring) forwards;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Revenue Card */
+        .hero-card {
+            background: linear-gradient(145deg, rgba(20, 29, 49, 0.9) 0%, rgba(10, 15, 28, 0.95) 100%);
+            border: 1px solid rgba(255, 203, 5, 0.22);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255, 203, 5, 0.14) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .hero-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .hero-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-top: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .hero-amount span {
+            font-size: 15px;
+            color: var(--accent-mtn);
+            font-weight: 700;
+        }
+
+        .mtn-tag {
+            background: rgba(255, 203, 5, 0.14);
+            border: 1px solid rgba(255, 203, 5, 0.3);
+            color: var(--accent-mtn);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hero-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .mini-stat {
+            background: rgba(5, 8, 17, 0.45);
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .mini-stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .mini-stat-lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Quick Tariffs Grid */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 0 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .section-sub {
+            font-size: 12px;
+            color: var(--accent-mtn);
+            font-weight: 600;
+        }
+
+        .tariffs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .tariff-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tariff-card:hover {
+            border-color: rgba(255, 203, 5, 0.45);
+            background: var(--bg-surface-elevated);
+        }
+
+        .tariff-card.popular {
+            border-color: rgba(255, 203, 5, 0.4);
+            background: linear-gradient(160deg, rgba(255, 203, 5, 0.09) 0%, rgba(15, 23, 42, 0.75) 100%);
+        }
+
+        .tariff-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 9px;
+            font-weight: 800;
+            background: var(--accent-mtn);
+            color: #050811;
+            padding: 2px 7px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .tariff-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-mtn);
+        }
+
+        .tariff-duration {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        .tariff-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .tariff-cta {
+            margin-top: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.07);
+            padding: 6px 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .tariff-card.popular .tariff-cta {
+            background: var(--accent-mtn);
+            color: #050811;
+        }
+
+        /* Active Sessions List */
+        .search-bar {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 12px 14px 12px 40px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent-mtn);
+        }
+
+        .search-bar svg {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .client-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            transition: all 0.25s var(--spring);
+        }
+
+        .client-card.expired {
+            border-color: rgba(244, 63, 94, 0.45);
+            background: linear-gradient(145deg, rgba(244, 63, 94, 0.08) 0%, rgba(15, 23, 42, 0.7) 100%);
+        }
+
+        .client-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1E293B, #0F172A);
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--accent-mtn);
+        }
+
+        .client-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .client-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        .timer-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.14);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .timer-badge.warning {
+            background: rgba(255, 203, 5, 0.14);
+            color: var(--accent-mtn);
+            border-color: rgba(255, 203, 5, 0.3);
+        }
+
+        .timer-badge.danger {
+            background: rgba(244, 63, 94, 0.16);
+            color: var(--accent-rose);
+            border-color: rgba(244, 63, 94, 0.35);
+            animation: pulse 1.2s infinite;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 99px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+            transition: width 1s linear;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, #F59E0B, var(--accent-mtn));
+        }
+
+        .progress-fill.danger {
+            background: var(--accent-rose);
+        }
+
+        .client-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-sm.primary {
+            background: rgba(255, 203, 5, 0.14);
+            border-color: rgba(255, 203, 5, 0.3);
+            color: var(--accent-mtn);
+        }
+
+        .btn-sm.danger {
+            background: rgba(244, 63, 94, 0.12);
+            border-color: rgba(244, 63, 94, 0.25);
+            color: var(--accent-rose);
+        }
+
+        /* Bottom Floating Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 28px);
+            max-width: 500px;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 8px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 14px;
+            border-radius: 16px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 700;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+
+        .nav-item.active {
+            color: var(--accent-mtn);
+            background: rgba(255, 203, 5, 0.12);
+        }
+
+        .nav-fab {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #FFCB05 0%, #F59E0B 100%);
+            color: #050811;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(255, 203, 5, 0.35);
+            margin-top: -18px;
+        }
+
+        /* Modal / Bottom Sheet */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.82);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bottom-sheet {
+            width: 100%;
+            max-width: 540px;
+            background: #0F172A;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 28px 28px 0 0;
+            padding: 20px 20px 32px;
+            animation: slideUp 0.35s var(--spring);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 99px;
+            margin: 0 auto 18px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #050811;
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 13px 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-mtn);
+        }
+
+        .btn-primary-full {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, #FFCB05 0%, #F59E0B 100%);
+            color: #050811;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 800;
+            margin-top: 8px;
+            box-shadow: 0 10px 25px rgba(255, 203, 5, 0.25);
+        }
+
+        /* QR Ticket Styling */
+        .qr-ticket {
+            background: #FFFFFF;
+            color: #050811;
+            border-radius: 22px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            margin: 14px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .qr-canvas-box {
+            background: #F8FAFC;
+            padding: 14px;
+            border-radius: 16px;
+            display: inline-block;
+            border: 2px dashed #CBD5E1;
+            margin: 12px 0;
+        }
+
+        .voucher-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            background: #050811;
+            color: #FFCB05;
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 76px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--accent-mtn);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s var(--spring);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 36px 20px;
+            background: var(--bg-surface);
+            border: 1px dashed var(--border-glass);
+            border-radius: var(--radius-xl);
+            color: var(--text-secondary);
+        }
+
+        .settings-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                </svg>
+            </div>
+            <div class="brand-title">
+                <h1>WiFiZone <span class="badge-pro">ULTRA</span></h1>
+                <div class="status-pill">
+                    <span class="pulse-dot"></span>
+                    <span id="headerSsidDisplay">MTN Box 4G+ • Actif</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="amis.html" class="icon-btn tactile" title="Messagerie & Amis">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                </svg>
+            </a>
+            <button class="icon-btn tactile" onclick="openModal('modalSettings')" title="Configuration Box MTN">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <span style="color: var(--accent-mtn);">●</span>
+        <span id="toastMsg">Action effectuée</span>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- VIEW 1: DASHBOARD -->
+        <section id="view-dashboard" class="view-section active">
+            <div class="hero-card">
+                <div class="hero-top">
+                    <div>
+                        <div class="hero-label">Recette Totale Encaissée</div>
+                        <div class="hero-amount" id="totalRevenueDisplay">0 <span>FCFA</span></div>
+                    </div>
+                    <div class="mtn-tag">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+                        MTN MoMo / Cash
+                    </div>
+                </div>
+                <div class="hero-stats-row">
+                    <div class="mini-stat">
+                        <div class="mini-stat-val" id="statActiveCount" style="color: var(--accent-emerald);">0</div>
+                        <div class="mini-stat-lbl">Connectés</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-val" id="statTodayRevenue" style="color: var(--accent-mtn);">0 F</div>
+                        <div class="mini-stat-lbl">Aujourd'hui</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-val" id="statExpiredCount" style="color: var(--accent-rose);">0</div>
+                        <div class="mini-stat-lbl">À couper</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span class="section-title">Vente Express • 1 Clic</span>
+                <span class="section-sub">Dès 500 FCFA</span>
+            </div>
+
+            <div class="tariffs-grid">
+                <div class="tariff-card tactile" onclick="quickSell(500, 180, 'Pass Express 3H')">
+                    <div>
+                        <div class="tariff-price">500 F</div>
+                        <div class="tariff-duration">3 Heures</div>
+                        <div class="tariff-desc">Navigation rapide & réseaux</div>
+                    </div>
+                    <div class="tariff-cta">+ Générer QR</div>
+                </div>
+
+                <div class="tariff-card popular tactile" onclick="quickSell(1000, 1440, 'Pass Journée 24H')">
+                    <span class="tariff-badge">Top Vente</span>
+                    <div>
+                        <div class="tariff-price">1 000 F</div>
+                        <div class="tariff-duration">24 Heures</div>
+                        <div class="tariff-desc">Illimité haute vitesse</div>
+                    </div>
+                    <div class="tariff-cta">+ Générer QR</div>
+                </div>
+
+                <div class="tariff-card tactile" onclick="quickSell(2000, 4320, 'Pass 3 Jours')">
+                    <div>
+                        <div class="tariff-price">2 000 F</div>
+                        <div class="tariff-duration">72 Heures</div>
+                        <div class="tariff-desc">Week-end & streaming</div>
+                    </div>
+                    <div class="tariff-cta">+ Générer QR</div>
+                </div>
+
+                <div class="tariff-card tactile" onclick="quickSell(5000, 10080, 'Pass Semaine 7J')">
+                    <div>
+                        <div class="tariff-price">5 000 F</div>
+                        <div class="tariff-duration">7 Jours</div>
+                        <div class="tariff-desc">Forfait Pro 1 appareil</div>
+                    </div>
+                    <div class="tariff-cta">+ Générer QR</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span class="section-title">Sessions en Direct</span>
+                <span class="section-sub" onclick="switchView('clients')" style="cursor:pointer;">Tout voir →</span>
+            </div>
+
+            <div id="dashboardClientList" class="client-list"></div>
+        </section>
+
+        <!-- VIEW 2: CLIENTS & CHRONOS -->
+        <section id="view-clients" class="view-section">
+            <div class="section-header" style="margin-top: 0;">
+                <span class="section-title">Gestion des Clients Actifs</span>
+                <span class="section-sub" id="clientsTotalBadge">0 appareil</span>
+            </div>
+
+            <div class="search-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Rechercher un client ou code ticket..." oninput="renderClients()">
+            </div>
+
+            <div id="fullClientList" class="client-list"></div>
+        </section>
+
+        <!-- VIEW 3: HISTORIQUE & COMPTA -->
+        <section id="view-history" class="view-section">
+            <div class="section-header" style="margin-top: 0;">
+                <span class="section-title">Journal des Ventes (FCFA)</span>
+                <button class="btn-sm primary" style="flex:0; padding: 6px 12px;" onclick="exportCSV()">Exporter CSV</button>
+            </div>
+            <div id="historyList" class="client-list"></div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active tactile" id="nav-dashboard" onclick="switchView('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+            <span>Accueil</span>
+        </button>
+
+        <button class="nav-fab tactile" onclick="openModal('modalNewClient')" title="Nouveau Client">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+
+        <button class="nav-item tactile" id="nav-clients" onclick="switchView('clients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Clients</span>
+        </button>
+
+        <button class="nav-item tactile" id="nav-history" onclick="switchView('history')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <span>Caisse</span>
+        </button>
+    </nav>
+
+    <!-- MODAL 1: NOUVELLE VENTE -->
+    <div id="modalNewClient" class="modal-backdrop" onclick="closeModalOnBg(event, 'modalNewClient')">
+        <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">Activer un accès Wi-Fi</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Nom ou Appareil du Client</label>
+                <input type="text" id="inputClientName" class="form-control" placeholder="Ex: Moussa • Tecno Spark">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Forfait & Tarif (FCFA)</label>
+                <select id="inputPlan" class="form-control" onchange="syncCustomPlan()">
+                    <option value="500|180|Pass Express 3H">500 FCFA — 3 Heures</option>
+                    <option value="1000|1440|Pass Journée 24H" selected>1 000 FCFA — 24 Heures (Recommandé)</option>
+                    <option value="2000|4320|Pass 3 Jours">2 000 FCFA — 3 Jours (72H)</option>
+                    <option value="5000|10080|Pass Semaine 7J">5 000 FCFA — 7 Jours</option>
+                    <option value="custom">Montant & Durée personnalisés...</option>
+                </select>
+            </div>
+
+            <div id="customPlanFields" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <div>
+                    <label class="form-label">Prix (FCFA)</label>
+                    <input type="number" id="inputCustomPrice" class="form-control" value="500" min="100">
+                </div>
+                <div>
+                    <label class="form-label">Durée (Minutes)</label>
+                    <input type="number" id="inputCustomMinutes" class="form-control" value="120" min="5">
+                </div>
+            </div>
+
+            <button class="btn-primary-full tactile" onclick="createClientSession()">Valider & Générer le Ticket QR</button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: TICKET QR CODE -->
+    <div id="modalQr" class="modal-backdrop" onclick="closeModalOnBg(event, 'modalQr')">
+        <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div style="text-align: center;">
+                <span class="badge-pro">Ticket Wi-Fi Généré</span>
+                <h2 style="font-size: 18px; font-weight: 800; margin-top: 6px;" id="qrClientTitle">Client WiFi</h2>
+            </div>
+
+            <div class="qr-ticket">
+                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748B;">Scannez pour connecter</div>
+                <div style="font-size: 15px; font-weight: 800; margin-top: 2px;" id="qrSsidLabel">Réseau : MTN-WiFiZone</div>
+                
+                <div class="qr-canvas-box">
+                    <canvas id="qrCanvas" width="180" height="180"></canvas>
+                </div>
+
+                <div style="font-size: 11px; color: #475569; font-weight: 600;">Code Session & Mot de passe</div>
+                <div class="voucher-code" id="qrCodeText">MTN-8492</div>
+                <div style="font-size: 12px; font-weight: 700; color: #0F172A; margin-top: 10px;" id="qrPlanSummary">1 000 FCFA • 24 Heures</div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-sm primary tactile" style="padding: 14px; font-size: 13px;" onclick="copyTicketDetails()">Copier les accès</button>
+                <button class="btn-sm tactile" style="padding: 14px; font-size: 13px;" onclick="closeModal('modalQr')">Terminer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CONFIGURATION BOX MTN -->
+    <div id="modalSettings" class="modal-backdrop" onclick="closeModalOnBg(event, 'modalSettings')">
+        <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">Configuration Box MTN & Sécurité</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Nom du réseau Wi-Fi (SSID)</label>
+                <input type="text" id="cfgSsid" class="form-control" placeholder="MTN_4G_BOX_PRO">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mot de passe Wi-Fi actuel</label>
+                <input type="text" id="cfgPass" class="form-control" placeholder="Mot de passe du point d'accès">
+            </div>
+
+            <div class="settings-card" style="border-color: rgba(255, 203, 5, 0.3);">
+                <div style="font-size: 12px; font-weight: 800; color: var(--accent-mtn); margin-bottom: 4px;">🛡️ Protection Anti-Partage</div>
+                <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+                    Lorsqu'un chronomètre atteint <strong>00:00:00</strong>, une alerte sonore retentit et le client passe en rouge ("À couper") pour vous permettre de bloquer son adresse MAC ou renouveler son mot de passe.
+                </div>
+            </div>
+
+            <button class="btn-primary-full tactile" onclick="saveSettings()">Enregistrer la configuration</button>
+            <button class="btn-sm danger tactile" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="resetAllData()">Réinitialiser toutes les données</button>
+        </div>
+    </div>
+
+    <script>
+        // State & Persistent LocalStorage
+        const STORAGE_KEY = 'wifizone_ultra_v1';
+        let appState = {
+            config: {
+                ssid: 'MTN-WiFiZone-Pro',
+                password: 'MTN2026VIP'
+            },
+            clients: [],
+            history: []
+        };
+
+        let lastGeneratedTicket = '';
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    appState = JSON.parse(saved);
+                } else {
+                    // Demo initial entry so user sees it live immediately
+                    const now = Date.now();
+                    appState.clients = [
+                        {
+                            id: 'c_' + now,
+                            name: 'Client #1 (Démo)',
+                            code: 'MTN-' + Math.floor(1000 + Math.random() * 9000),
+                            planName: 'Pass Express 3H',
+                            price: 500,
+                            durationMin: 180,
+                            startTime: now,
+                            endTime: now + 180 * 60000,
+                            alerted: false
+                        }
+                    ];
+                    appState.history = [
+                        {
+                            id: 'h_' + now,
+                            name: 'Client #1 (Démo)',
+                            planName: 'Pass Express 3H',
+                            price: 500,
+                            date: new Date().toISOString()
+                        }
+                    ];
+                    saveState();
+                }
+            } catch (e) {
+                console.error('Erreur lecture stockage:', e);
+            }
+            document.getElementById('cfgSsid').value = appState.config.ssid;
+            document.getElementById('cfgPass').value = appState.config.password;
+            document.getElementById('headerSsidDisplay').textContent = `${appState.config.ssid} • Actif`;
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        }
+
+        // Haptic & Audio Feedback
+        function triggerHaptic(ms = 18) {
+            if (navigator.vibrate) navigator.vibrate(ms);
+        }
+
+        function playAlertBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.35);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+            } catch (e) {}
+        }
+
+        function showToast(msg) {
+            triggerHaptic(15);
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        // Navigation
+        function switchView(viewName) {
+            triggerHaptic(12);
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('view-' + viewName).classList.add('active');
+            const navBtn = document.getElementById('nav-' + viewName);
+            if (navBtn) navBtn.classList.add('active');
+            
+            renderAll();
+        }
+
+        // Modals
+        function openModal(id) {
+            triggerHaptic(15);
+            document.getElementById(id).classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        function closeModalOnBg(e, id) {
+            if (e.target.id === id) closeModal(id);
+        }
+
+        function syncCustomPlan() {
+            const val = document.getElementById('inputPlan').value;
+            document.getElementById('customPlanFields').style.display = (val === 'custom') ? 'grid' : 'none';
+        }
+
+        // Quick Sell & Session Creation
+        function quickSell(price, minutes, planName) {
+            triggerHaptic(25);
+            const count = appState.history.length + 1;
+            const clientName = `Client #${count}`;
+            addSession(clientName, price, minutes, planName);
+        }
+
+        function createClientSession() {
+            const rawName = document.getElementById('inputClientName').value.trim();
+            const count = appState.history.length + 1;
+            const name = rawName || `Client #${count}`;
+            const planVal = document.getElementById('inputPlan').value;
+
+            let price, minutes, planName;
+            if (planVal === 'custom') {
+                price = parseInt(document.getElementById('inputCustomPrice').value) || 500;
+                minutes = parseInt(document.getElementById('inputCustomMinutes').value) || 60;
+                planName = `Pass Perso (${minutes}m)`;
+            } else {
+                const parts = planVal.split('|');
+                price = parseInt(parts[0]);
+                minutes = parseInt(parts[1]);
+                planName = parts[2];
+            }
+
+            closeModal('modalNewClient');
+            document.getElementById('inputClientName').value = '';
+            addSession(name, price, minutes, planName);
+        }
+
+        function addSession(name, price, minutes, planName) {
+            const now = Date.now();
+            const code = 'MTN-' + Math.floor(1000 + Math.random() * 9000);
+            const newClient = {
+                id: 'c_' + now + '_' + Math.random().toString(36).substr(2, 4),
+                name,
+                code,
+                planName,
+                price,
+                durationMin: minutes,
+                startTime: now,
+                endTime: now + minutes * 60000,
+                alerted: false
+            };
+
+            appState.clients.unshift(newClient);
+            appState.history.unshift({
+                id: 'h_' + now,
+                name,
+                planName,
+                price,
+                date: new Date().toISOString()
+            });
+
+            saveState();
+            renderAll();
+            showQrTicket(newClient);
+            showToast(`+${price} FCFA encaissés (${name})`);
+        }
+
+        // Deterministic Matrix QR Generator (100% offline, crisp canvas)
+        function drawMatrixQR(canvas, text) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const modules = 25;
+            const cell = Math.floor(size / modules);
+            const offset = Math.floor((size - cell * modules) / 2);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, size, size);
+            ctx.fillStyle = '#050811';
+
+            // Hash seed from string
+            let hash = 2166136261;
+            for (let i = 0; i < text.length; i++) {
+                hash ^= text.charCodeAt(i);
+                hash = Math.imul(hash, 16777619);
+            }
+
+            function drawFinder(r, c) {
+                ctx.fillStyle = '#050811';
+                ctx.fillRect(offset + c * cell, offset + r * cell, 7 * cell, 7 * cell);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(offset + (c + 1) * cell, offset + (r + 1) * cell, 5 * cell, 5 * cell);
+                ctx.fillStyle = '#050811';
+                ctx.fillRect(offset + (c + 2) * cell, offset + (r + 2) * cell, 3 * cell, 3 * cell);
+            }
+
+            // Data modules
+            for (let r = 0; r < modules; r++) {
+                for (let c = 0; c < modules; c++) {
+                    // Skip finder zones
+                    if ((r < 8 && c < 8) || (r < 8 && c >= modules - 8) || (r >= modules - 8 && c < 8)) continue;
+                    const bit = ((hash ^ (r * 31 + c * 17) ^ ((r * c) << 3)) >>> ((r + c) % 16)) & 1;
+                    if (bit) {
+                        ctx.fillRect(offset + c * cell, offset + r * cell, cell - 0.5, cell - 0.5);
+                    }
+                }
+            }
+
+            drawFinder(0, 0);
+            drawFinder(0, modules - 7);
+            drawFinder(modules - 7, 0);
+
+            // Center MTN badge
+            const center = size / 2;
+            ctx.fillStyle = '#FFCB05';
+            ctx.beginPath();
+            ctx.roundRect(center - 18, center - 12, 36, 24, 6);
+            ctx.fill();
+            ctx.fillStyle = '#050811';
+            ctx.font = '800 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('WIFI', center, center + 1);
+        }
+
+        function showQrTicket(client) {
+            const wifiPayload = `WIFI:T:WPA;S:${appState.config.ssid};P:${appState.config.password};;`;
+            document.getElementById('qrClientTitle').textContent = client.name;
+            document.getElementById('qrSsidLabel').textContent = `Réseau : ${appState.config.ssid}`;
+            document.getElementById('qrCodeText').textContent = `${appState.config.password}`;
+            document.getElementById('qrPlanSummary').textContent = `${client.price.toLocaleString('fr-FR')} FCFA • ${client.planName} (${client.code})`;
+            
+            lastGeneratedTicket = `📶 ACCÈS WIFI ZONE
+Client : ${client.name}
+Réseau : ${appState.config.ssid}
+Mot de passe : ${appState.config.password}
+Forfait : ${client.planName} (${client.price} FCFA)
+Ticket : ${client.code}`;
+            
+            drawMatrixQR(document.getElementById('qrCanvas'), wifiPayload + '|' + client.code);
+            openModal('modalQr');
+        }
+
+        function copyTicketDetails() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(lastGeneratedTicket);
+                showToast('Accès Wi-Fi copiés !');
+            }
+        }
+
+        // Client Actions
+        function extendClient(id, addMinutes, addPrice) {
+            triggerHaptic(20);
+            const c = appState.clients.find(x => x.id === id);
+            if (!c) return;
+            const base = Math.max(Date.now(), c.endTime);
+            c.endTime = base + addMinutes * 60000;
+            c.durationMin += addMinutes;
+            c.alerted = false;
+            
+            appState.history.unshift({
+                id: 'h_' + Date.now(),
+                name: c.name + ' (Prolongation)',
+                planName: `+${addMinutes / 60}H`,
+                price: addPrice,
+                date: new Date().toISOString()
+            });
+            saveState();
+            renderAll();
+            showToast(`+${addMinutes / 60}H ajoutées (+${addPrice} F)`);
+        }
+
+        function removeClient(id) {
+            triggerHaptic(25);
+            appState.clients = appState.clients.filter(x => x.id !== id);
+            saveState();
+            renderAll();
+            showToast('Session déconnectée et retirée');
+        }
+
+        // Formatting Helpers
+        function formatRemaining(ms) {
+            if (ms <= 0) return '00:00:00';
+            const totalSec = Math.floor(ms / 1000);
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function createClientCardHTML(c) {
+            const now = Date.now();
+            const remaining = c.endTime - now;
+            const totalMs = c.durationMin * 60000;
+            const pct = Math.max(0, Math.min(100, (remaining / totalMs) * 100));
+            const isExpired = remaining <= 0;
+            const isWarning = !isExpired && remaining < 15 * 60000;
+
+            const badgeClass = isExpired ? 'danger' : (isWarning ? 'warning' : '');
+            const cardClass = isExpired ? 'client-card expired' : 'client-card';
+            const initials = c.name.substring(0, 2).toUpperCase();
+
+            return `
+                <div class="${cardClass}">
+                    <div class="client-top">
+                        <div class="client-info">
+                            <div class="avatar">${initials}</div>
+                            <div>
+                                <div class="client-name">${c.name}</div>
+                                <div class="client-meta">
+                                    <span>${c.planName}</span> • 
+                                    <span style="color: var(--accent-mtn); font-weight:700;">${c.price} F</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timer-badge ${badgeClass}" data-end="${c.endTime}" data-total="${totalMs}">
+                            ${isExpired ? 'EXPIRÉ' : formatRemaining(remaining)}
+                        </div>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill ${badgeClass}" style="width: ${pct}%"></div>
+                    </div>
+                    <div class="client-actions">
+                        <button class="btn-sm tactile" onclick='showQrTicket(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+                            QR Code
+                        </button>
+                        <button class="btn-sm primary tactile" onclick="extendClient('${c.id}', 180, 500)">
+                            +3H (500F)
+                        </button>
+                        <button class="btn-sm danger tactile" onclick="removeClient('${c.id}')">
+                            Couper
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderClients() {
+            const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+            const filtered = appState.clients.filter(c => 
+                c.name.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)
+            );
+
+            const dashContainer = document.getElementById('dashboardClientList');
+            const fullContainer = document.getElementById('fullClientList');
+
+            if (appState.clients.length === 0) {
+                const emptyHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📡</div>
+                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Aucun client connecté</div>
+                        <div style="font-size: 12px;">Appuyez sur un tarif ci-dessus ou sur <strong>+</strong> pour vendre un accès Wi-Fi.</div>
+                    </div>
+                `;
+                dashContainer.innerHTML = emptyHTML;
+                fullContainer.innerHTML = emptyHTML;
+            } else {
+                dashContainer.innerHTML = appState.clients.slice(0, 4).map(createClientCardHTML).join('');
+                fullContainer.innerHTML = filtered.length 
+                    ? filtered.map(createClientCardHTML).join('') 
+                    : '<div class="empty-state">Aucun résultat pour cette recherche.</div>';
+            }
+
+            document.getElementById('clientsTotalBadge').textContent = `${appState.clients.length} appareil(s)`;
+        }
+
+        function renderStatsAndHistory() {
+            const totalRev = appState.history.reduce((sum, item) => sum + item.price, 0);
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const todayRev = appState.history
+                .filter(item => item.date.startsWith(todayStr))
+                .reduce((sum, item) => sum + item.price, 0);
+
+            const now = Date.now();
+            const expiredCount = appState.clients.filter(c => c.endTime <= now).length;
+            const activeCount = appState.clients.length - expiredCount;
+
+            document.getElementById('totalRevenueDisplay').innerHTML = `${totalRev.toLocaleString('fr-FR')} <span>FCFA</span>`;
+            document.getElementById('statActiveCount').textContent = activeCount;
+            document.getElementById('statTodayRevenue').textContent = `${todayRev.toLocaleString('fr-FR')} F`;
+            document.getElementById('statExpiredCount').textContent = expiredCount;
+
+            const historyContainer = document.getElementById('historyList');
+            if (appState.history.length === 0) {
+                historyContainer.innerHTML = '<div class="empty-state">Aucune transaction enregistrée.</div>';
+            } else {
+                historyContainer.innerHTML = appState.history.map(h => {
+                    const d = new Date(h.date);
+                    const timeStr = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const dateStr = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+                    return `
+                        <div class="client-card" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div class="client-name">${h.name}</div>
+                                <div class="client-meta">${h.planName} • ${dateStr} à ${timeStr}</div>
+                            </div>
+                            <div style="font-family:'JetBrains Mono', monospace; font-weight:800; color:var(--accent-emerald); font-size:15px;">
+                                +${h.price.toLocaleString('fr-FR')} F
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderAll() {
+            renderClients();
+            renderStatsAndHistory();
+        }
+
+        // Settings & Export
+        function saveSettings() {
+            appState.config.ssid = document.getElementById('cfgSsid').value.trim() || 'MTN-WiFiZone-Pro';
+            appState.config.password = document.getElementById('cfgPass').value.trim() || 'MTN2026VIP';
+            saveState();
+            document.getElementById('headerSsidDisplay').textContent = `${appState.config.ssid} • Actif`;
+            closeModal('modalSettings');
+            showToast('Configuration Box MTN enregistrée');
+        }
+
+        function resetAllData() {
+            if (confirm('Voulez-vous vraiment effacer toutes les sessions et l’historique ?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                appState.clients = [];
+                appState.history = [];
+                saveState();
+                renderAll();
+                closeModal('modalSettings');
+                showToast('Données réinitialisées');
+            }
+        }
+
+        function exportCSV() {
+            if (appState.history.length === 0) {
+                showToast('Aucune vente à exporter');
+                return;
+            }
+            let csv = 'Date,Client,Forfait,Montant_FCFA
+';
+            appState.history.forEach(h => {
+                csv += `"${h.date}","${h.name}","${h.planName}",${h.price}
+`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `recettes_wifizone_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            showToast('Export CSV téléchargé');
+        }
+
+        // Live 1-Second Ticker Loop
+        setInterval(() => {
+            const now = Date.now();
+            let needsFullRender = false;
+
+            appState.clients.forEach(c => {
+                if (c.endTime <= now && !c.alerted) {
+                    c.alerted = true;
+                    needsFullRender = true;
+                    playAlertBeep();
+                    triggerHaptic(120);
+                    showToast(`⚠️ Temps écoulé : ${c.name} à couper !`);
+                }
+            });
+
+            if (needsFullRender) {
+                saveState();
+                renderAll();
+                return;
+            }
+
+            // Smooth DOM tick without losing scroll/focus
+            document.querySelectorAll('.timer-badge').forEach(badge => {
+                const end = parseInt(badge.getAttribute('data-end'));
+                const total = parseInt(badge.getAttribute('data-total'));
+                const rem = end - now;
+                const card = badge.closest('.client-card');
+                const fill = card ? card.querySelector('.progress-fill') : null;
+
+                if (rem <= 0) {
+                    badge.textContent = 'EXPIRÉ';
+                    badge.className = 'timer-badge danger';
+                    if (card) card.classList.add('expired');
+                    if (fill) {
+                        fill.style.width = '0%';
+                        fill.className = 'progress-fill danger';
+                    }
+                } else {
+                    badge.textContent = formatRemaining(rem);
+                    const pct = Math.max(0, Math.min(100, (rem / total) * 100));
+                    if (fill) fill.style.width = pct + '%';
+                    if (rem < 15 * 60000) {
+                        badge.className = 'timer-badge warning';
+                        if (fill) fill.className = 'progress-fill warning';
+                    }
+                }
+            });
+        }, 1000);
+
+        // Init
+        loadState();
+        renderAll();
+    </script>
+</body>
+</html>
